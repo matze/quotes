@@ -82,7 +82,7 @@ def break_lines(words, line_width):
 def format_quote(quote, author):
     """Print out the quote with optimal line break (sans hyphenation) and the
     name of the author."""
-    line_width = 40
+    line_width = 45
     rows, cols = os.popen('stty size', 'r').read().split()
     max_width = int(cols)
     author = "-- %s" % author
