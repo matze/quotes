@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
 Quotes -- a fortune like quotation display program.
 Copyright (C) 2010  Matthias Vogelgesang
@@ -21,6 +22,9 @@ import urllib
 import HTMLParser
 import os
 import random
+import cairo
+import pango
+import pangocairo
 
 class ZitateNetParser(HTMLParser.HTMLParser):
     def __init__(self):
@@ -95,6 +99,38 @@ def format_quote(quote, author):
 
     print
     print '{0:>{width}}'.format(author, width=line_width)
+
+def embed_quote(quote, author, image_name, output_name, font_size):
+    surface = cairo.ImageSurface.create_from_png(image_name)
+    ctx = cairo.Context(surface)
+
+    # typeset quotation
+    pctx = pangocairo.CairoContext(ctx)
+    fd = pango.FontDescription("Linux Libertine O 24")
+    layout = pctx.create_layout()
+    layout.set_font_description(fd)
+    layout.set_text(quote)
+    layout.set_width(900*pango.SCALE)
+    layout.set_wrap(pango.WRAP_WORD)
+    layout.set_alignment(pango.ALIGN_LEFT)
+	
+    w,h = layout.get_pixel_size()
+
+    ctx.set_source_rgb(1.0, 1.0, 1.0)
+    ctx.translate(1920 - w - 80, 1080 - h)
+    pctx.update_layout(layout)
+    pctx.show_layout(layout)
+
+    # typeset author name
+    ctx.translate(0, h+20)
+    fd.set_style(pango.STYLE_OBLIQUE)
+    layout.set_font_description(fd)
+    layout.set_text(u'— ' + author)
+    layout.set_alignment(pango.ALIGN_RIGHT)
+    pctx.update_layout(layout)
+    pctx.show_layout(layout)
+
+    surface.write_to_png(output_name)
 
 if __name__ == '__main__':
     quote, author = get_random_quote()

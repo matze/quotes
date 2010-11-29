@@ -8,4 +8,5 @@ Todo
 ----
 
 * add other sources than just <zitate.net>
-* add wallpaper writing code
+* add Pango code for better contrast
+* use small caps for author name rather than an italic font face
